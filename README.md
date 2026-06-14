@@ -72,7 +72,7 @@ HTML: {{$binary.data.toString()}}
 Nota: cuando se agrega una libreria nueva a requirement.txt; por ejemplo, la libreria que convierte de html a pdf "weasyprint" se debe ejecutar lo siguiente, esto para que Git pase a Github los commits, y así Render instale la librería durante el deploy. 
 git add .
 git commit -m "Agregar weasyprint y modificación de app.py"
-git push
+git push origin main
 git status
 
 
