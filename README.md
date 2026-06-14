@@ -17,34 +17,54 @@ Paso 3.
 Cargar HTML desde http://localhost:8000/catalog
 
 Paso 4. Desde la carpeta de origen subir a GitHub
+https://github.com/new
+Nombre: catalog-api
+NO marques “Initialize with README”
+Crear repositorio
 git init
 git add .
 git commit -m "API scraper"
 git branch -M main
-git remote add origin https://github.com/TU_USUARIO/catalog-api.git
-git push -u origin main
+git remote add origin https://github.com/Erick0096/catalog-api.git
+git remote -v
+Generar un token desde https://github.com/settings/developersettings/personalaccesstokens/tokens
+Nombre:API_n8n
+Click en "Generate new Tokens (classic)"
+Selecciona:repo (Full control of private repositories)
+Copia el token : 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
 
+git push -u origin main
+Autorize credentials
+Erick0096
+Contraseña: Token
+Para no repetir el Login
+git config --global credential.helper store
 
 Paso 5. Deploy en Render
 Crear cuenta desde https://render.com
 Click en New
 Selecciona:
 Web Service
+Git repository y escoger catalog-api
 Conectar el repositorio cargado en GitHub y llenar Basic Settings con:
 
 Name: catalog-api
 Region: (cualquiera cercana)
 Branch: main
+Build Command:pip install -r requirements.txt
+Start Command: uvicorn app:app --host 0.0.0.0 --port 10000
+Click en Deploy Web Service
 
-6. Build & Deploy
-Build Command:
-pip install -r requirements.txt
+6. Despues de unos minutos Render devuelve https://catalog-api-el45.onrender.com
 
-Start Command:
-uvicorn app:app --host 0.0.0.0 --port 10000
+7.Test en https://catalog-api.onrender.com/catalog
 
-Deploy 
-Click en Create Web Service
-despues de unos minutos Rendr devuelve https://catalog-api.onrender.com
+8. n8n Conection
+Nodo: HTTP Request
+Method: GET
+URL: https://catalog-api-el45.onrender.com
+Response Format: File
+Download: ON
 
-Test  https://catalog-api.onrender.com/catalog
+Nodo: Gmail
+HTML: {{$binary.data.toString()}}
