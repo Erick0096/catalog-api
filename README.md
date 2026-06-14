@@ -1,13 +1,12 @@
 Paso 1. Preparar FastAPI creando el proyecto
 catalog-api/
-│
-├── app.py
-├── scraper.py
-├── requirements.txt
-├── Productos_urls.txt
-├── Catalogo_2026.html (Creada por scraper.py)
-├── Productos.json (Creada por scraper.py)
-
+  │
+  ├── app.py
+  ├── scraper.py
+  ├── requirements.txt
+  ├── Productos_urls.txt
+  ├── Catalogo_2026.html (Creada por scraper.py)
+  ├── Productos.json (Creada por scraper.py)
 
 Paso 2. 
 pip install -r requirements.txt
