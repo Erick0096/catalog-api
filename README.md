@@ -68,6 +68,6 @@ git add .
 git commit -m "Agregar weasyprint y modificación de app.py"
 git push origin main
 git status
-
+PC → git add → git commit → git push → GitHub → Render
 
 

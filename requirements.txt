@@ -1,4 +1,4 @@
 fastapi
 uvicorn
 deep-translator
-xhtml2pdf
+weasyprint
