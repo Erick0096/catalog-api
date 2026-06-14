@@ -1,12 +1,13 @@
 Paso 1. Preparar FastAPI creando el proyecto
 catalog-api/
-  │
-  ├── app.py
-  ├── scraper.py
-  ├── requirements.txt
-  ├── Productos_urls.txt
-  ├── Catalogo_2026.html (Creada por scraper.py)
-  ├── Productos.json (Creada por scraper.py)
+│
+├── app.py
+├── scraper.py
+├── requirements.txt
+├── Productos_urls.txt
+├── Catalogo_2026.html (Creada por scraper.py)
+├── Productos.json (Creada por scraper.py)
+
 
 Paso 2. 
 pip install -r requirements.txt
@@ -61,9 +62,18 @@ Click en Deploy Web Service
 8. n8n Conection
 Nodo: HTTP Request
 Method: GET
-URL: https://catalog-api-el45.onrender.com
+URL: https://catalog-api-el45.onrender.com/catalog-pdf
 Response Format: File
-Download: ON
+En Output:Dar Download para corroborar
 
 Nodo: Gmail
 HTML: {{$binary.data.toString()}}
+
+Nota: cuando se agrega una libreria nueva a requirement.txt; por ejemplo, la libreria que convierte de html a pdf "weasyprint" se debe ejecutar lo siguiente, esto para que Git pase a Github los commits, y así Render instale la librería durante el deploy. 
+git add .
+git commit -m "Agregar weasyprint y modificación de app.py"
+git push
+git status
+
+
+
