@@ -319,7 +319,7 @@ def buscar_descripcion_en_olivia(nombre_producto):
 # ==================== FUNCIONES DE LIMPIEZA ====================
 def limpiar_nombre_producto(nombre):
     if not nombre:
-        return "Producto My Beauty Store"
+        return "Producto Song Beauty Shop"
     
     nombre = re.sub(r'\s*\|.*$', '', nombre)
     nombre = re.sub(r'\s*-\s*StyleKorean.*$', '', nombre, flags=re.IGNORECASE)
@@ -772,7 +772,7 @@ def generar_html_catalogo(products):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> My Beauty Store - Catálogo de Productos</title>
+    <title> Song Beauty Shop- Catálogo de Productos</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -959,8 +959,8 @@ def generar_html_catalogo(products):
 </head>
 <body>
     <div class="header">
-        <h1>✨ My Beauty Store ✨</h1>
-        <p>Lo mejor de la cosmética coreana en Costa Rica</p>
+        <h1>🎶 Song Beauty Shop 🎶</h1>
+        <p>La belleza que se escucha</p>
         <div class="stats-badge">📊 {product_count} productos disponibles</div>
         <p style="font-size: 12px; margin-top: 10px;">Actualizado: {fecha}</p>
     </div>
