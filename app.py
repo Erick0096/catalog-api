@@ -3,7 +3,6 @@ from fastapi.responses import FileResponse
 from weasyprint import HTML
 import os
 from scraper import main
-
 app = FastAPI()
 
 @app.get("/")
