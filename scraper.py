@@ -11,7 +11,7 @@ from difflib import SequenceMatcher
 import urllib.parse
 from deep_translator import GoogleTranslator
 
-print("SCRAPING APP")
+print("Scraping script")
 
 # Setting
 USD_TO_CRC = 465
@@ -19,9 +19,8 @@ TIEMPO_ENTRE_PETICIONES = 0.5
 TAMANO_LOTE = 50
 MAX_INTENTOS = 3
 
-# Clase para traducir 
+# Clase para traducir usando libreria deep-translator compatible con Python 3.13
 class TraductorIlimitado:
-    """Traductor usando deep-translator compatible con Python 3.13"""
     
     def __init__(self):
         self.cache = {}
@@ -36,7 +35,7 @@ class TraductorIlimitado:
         if not texto or len(texto) < 20:
             return texto
         
-        # Limitar a 4900 caracteres por seguridad
+        # Limitar la descripción a 4900 caracteres por seguridad
         if len(texto) > 4900:
             texto_corto = texto[:4900]
             ultimo_punto = texto_corto.rfind('.')
@@ -75,15 +74,13 @@ class TraductorIlimitado:
             print(f"   📊 Caché: {self.estadisticas['cache_hits']} aciertos ({hit_rate:.1f}%)")
         print(f"   ❌ Errores: {self.estadisticas['errores']}")
 
-# ==================== FUNCIONES DE FORMATEO DE DESCRIPCIÓN ====================
+# Funciones de formato de descripción (Convierte una descripción en prosa a un formato estructurado con secciones y viñetas)
 def formatear_descripcion(texto_descripcion, nombre_producto):
-    """
-    Convierte una descripción en prosa a un formato estructurado con secciones y viñetas
-    """
+    
     if not texto_descripcion or len(texto_descripcion) < 30:
         return texto_descripcion
     
-    # Eliminar el nombre del producto del inicio de la descripción
+    # Eliminar redundancia con el nombre del producto al inicio de la descripción
     nombre_limpio = nombre_producto.split('|')[0].strip()
     
     # Eliminar el nombre del producto si aparece al inicio de la descripción
@@ -158,7 +155,7 @@ def formatear_descripcion(texto_descripcion, nombre_producto):
                 if len(item) > 10:
                     # Limpieza final del ítem
                     item_limpio = item.strip()
-                    # Eliminar cualquier residuo del nombre del producto
+                    # Eliminar cualquier residuo con el nombre del producto
                     item_limpio = re.sub(re.escape(nombre_limpio), '', item_limpio, flags=re.IGNORECASE)
                     item_limpio = re.sub(r'^[:;\-\s✨]+', '', item_limpio)
                     item_limpio = re.sub(r'\s+', ' ', item_limpio)
@@ -420,13 +417,13 @@ def calcular_precio_crc(precio_usd):
     valor_usd = float(match.group(1))
     
     if 10 <= valor_usd <= 27:
-        markup = 1.40
+        markup = 1.35
     elif 27 < valor_usd <= 38:
         markup = 1.25
     elif valor_usd > 38:
         markup = 1.15
     else:
-        markup = 1.40
+        markup = 1.35
     
     precio_final_usd = valor_usd * markup
     precio_final_crc = round(precio_final_usd * USD_TO_CRC)
