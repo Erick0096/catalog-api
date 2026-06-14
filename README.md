@@ -31,14 +31,13 @@ Generar un token desde https://github.com/settings/developersettings/personalacc
 Nombre:API_n8n
 Click en "Generate new Tokens (classic)"
 Selecciona:repo (Full control of private repositories)
+<<<<<<< HEAD
 Copia el token : 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
 
+=======
+>>>>>>> 59ed9 (Removed exposed secret token)
 git push -u origin main
-Autorize credentials
-Erick0096
-Contraseña: Token
-Para no repetir el Login
-git config --global credential.helper store
+git config --global credential.helper => store
 
 Paso 5. Deploy en Render
 Crear cuenta desde https://render.com
