@@ -16,14 +16,14 @@ python -m uvicorn app:app --reload
 Paso 3.
 Cargar HTML desde http://localhost:8000/catalog
 
-Paso 4. Desde la carpeta de origen subir a GitHub
+Paso 4. Desde la carpeta de origen subir a GitHub el nuevo proyecto
 https://github.com/new
 Nombre: catalog-api
-NO marques “Initialize with README”
+No marcar “Initialize with README.md”
 Crear repositorio
 git init
 git add .
-git commit -m "API scraper"
+git commit -m "Commit description"
 git branch -M main
 git remote add origin https://github.com/Erick0096/catalog-api.git
 git remote -v
@@ -63,11 +63,11 @@ En Output:Dar Download para corroborar
 Nodo: Gmail
 HTML: {{$binary.data.toString()}}
 
-Nota: cuando se agrega una libreria nueva a requirement.txt; por ejemplo, la libreria que convierte de html a pdf "weasyprint" se debe ejecutar lo siguiente, esto para que Git pase a Github los commits, y así Render instale la librería durante el deploy. 
+Nota: cuando se agrega una libreria nueva a requirement.txt; por ejemplo, la libreria que convierte de html a pdf "weasyprint" se debe ejecutar en Git lo siguiente, esto para que Git pase a Github los commits, y así Render instale la librería durante el deploy, y el flujo sea el siguiente PC → git add → git commit → git push → GitHub → Render
 git add .
 git commit -m "Agregar weasyprint y modificación de app.py"
 git push origin main
 git status
-PC → git add → git commit → git push → GitHub → Render
+
 
 
