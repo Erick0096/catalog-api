@@ -987,7 +987,7 @@ def generar_html_catalogo(products):
 </head>
 <body>
     <div class="header">
-        <h1>🎶 Song Beauty Shop 🎶</h1>
+        <h1> Song Beauty Shop </h1>
         <p>La belleza que se escucha</p>
         <div class="stats-badge">📊 {product_count} productos disponibles</div>
         <p style="font-size: 12px; margin-top: 10px;">Actualizado: {fecha}</p>
