@@ -1,4 +1,3 @@
-
 import urllib.request
 import json
 import re
@@ -18,6 +17,32 @@ USD_TO_CRC = 465
 TIEMPO_ENTRE_PETICIONES = 0.5
 TAMANO_LOTE = 50
 MAX_INTENTOS = 3
+
+def redondear_precio_crc(precio):
+    """
+    Redondea el precio hacia arriba al siguiente múltiplo de 100.
+    
+    Ejemplos:
+    - 9501 → 9600
+    - 12080 → 12100
+    - 12101 → 12200
+    - 12201 → 12300
+    - 12999 → 13000
+    - 10000 → 10000 (si es múltiplo exacto, se mantiene)
+    - 10001 → 10100
+    - 10099 → 10100
+    - 10100 → 10100 (se mantiene)
+    """
+    if not precio or precio <= 0:
+        return precio
+    
+    # Si ya es múltiplo exacto de 100, mantenerlo
+    if precio % 100 == 0:
+        return precio
+    else:
+        # Redondear hacia arriba al siguiente múltiplo de 100
+        # Ejemplo: 9501 // 100 = 95, (95 + 1) * 100 = 9600
+        return ((precio // 100) + 1) * 100
 
 # Clase para traducir usando libreria deep-translator compatible con Python 3.13
 class TraductorIlimitado:
@@ -252,7 +277,7 @@ def buscar_descripcion_en_internet(nombre_producto):
             html = response.read().decode('utf-8', errors='ignore')
             
             # Extraer snippets de resultados
-            snippets = re.findall(r'<td class="result-snippet">(.*?)</td>', html, re.DOTALL)
+            snippets = re.findall(r'<td class="result-snippet">(.*?)<tr>', html, re.DOTALL)
             
             mejores_descripciones = []
             for snippet in snippets:
@@ -427,6 +452,9 @@ def calcular_precio_crc(precio_usd):
     
     precio_final_usd = valor_usd * markup
     precio_final_crc = round(precio_final_usd * USD_TO_CRC)
+    
+    # Aplicar redondeo universal hacia arriba al siguiente múltiplo de 100
+    precio_final_crc = redondear_precio_crc(precio_final_crc)
     
     return precio_final_crc
 
@@ -1024,6 +1052,7 @@ def main():
     print(f"📈 Marcups: $10-27→45% | $27-38→30% | >$38→20%")
     print(f"🌐 Búsqueda en internet: Activada (DuckDuckGo + Olivia)")
     print("✨ DESCRIPCIONES FORMATEADAS: Activado (secciones con viñetas)")
+    print("🔄 REDONDEO DE PRECIOS: Activado (siempre hacia arriba al siguiente múltiplo de 100)")
     print("="*50)
     
     urls = cargar_urls()
@@ -1076,6 +1105,7 @@ def main():
     print(f"📁 HTML: {output_file}")
     print("\n🎉 ¡Listo! Abre el archivo HTML en tu navegador.")
     print("\n✨ Las descripciones ahora se muestran con secciones organizadas y viñetas ✨")
+    print("🔄 Los precios se redondean SIEMPRE hacia arriba al siguiente múltiplo de 100")
 
 if __name__ == "__main__":
     main()
