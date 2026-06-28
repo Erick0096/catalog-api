@@ -940,7 +940,7 @@ def generar_html_catalogo(products):
         @media print {
             /* Margen blanco exterior: 0.5in en todos los lados */
             @page {
-                margin: 0.5in;
+                margin: 0.2in;
                 size: A4;
             }
 
@@ -954,7 +954,7 @@ def generar_html_catalogo(products):
 
             .page {
                 min-height: 100vh;
-                padding: 0.8cm;          /* Marco morado interior */
+                padding: 0.4cm;          /* Marco morado interior */
                 page-break-after: always;
                 page-break-inside: avoid;
                 margin: 0;
