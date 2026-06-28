@@ -770,7 +770,8 @@ def generar_html_catalogo(products):
     Construye el HTML final del catálogo con todas las tarjetas de producto.
     Las imágenes no tienen loading="lazy" para que se carguen al instante.
     No incluye botones interactivos (WhatsApp, carrito).
-    El diseño usa un contenedor más ancho (900px) para que el borde morado sea más delgado.
+    El diseño usa márgenes de página a cero y un padding en el contenedor
+    para lograr un borde morado uniforme en los cuatro lados de cada página.
     """
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -789,74 +790,70 @@ def generar_html_catalogo(products):
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 0;
+            flex-direction: column;
         }
 
-        /* Contenedor principal: ancho para que el borde morado sea más delgado (900px) */
-        .container {
-            max-width: 900px;          /* Aumentado desde 600px para reducir el borde */
+        /* Cada página (producto) ocupará el 100% del viewport en pantalla,
+           y en impresión ocupará toda la página */
+        .page {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;          /* En pantalla ocupa toda la altura */
             width: 100%;
-            margin: 0 auto;
-            padding: 15px;            /* Espacio interno reducido */
-            background: transparent;
+            padding: 1.5cm;             /* Borde morado uniforme en los cuatro lados */
+            page-break-after: always;   /* Cada página en una hoja */
+            page-break-inside: avoid;
+            background: transparent;    /* Deja ver el fondo morado del body */
         }
 
-        /* Header: fondo azul con borde redondeado solo para pantalla */
+        /* La última página no necesita salto después */
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        /* Header */
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 25px 20px;
             text-align: center;
-            border-radius: 20px 20px 0 0;
-            page-break-after: avoid;
+            border-radius: 0;          /* Sin bordes redondeados en impresión */
+            flex-shrink: 0;
         }
 
-        .header h1 { font-size: 36px; margin-bottom: 10px; }
+        .header h1 { font-size: 36px; margin-bottom: 8px; }
 
         .stats-badge {
             display: inline-block;
             background: rgba(255,255,255,0.2);
             padding: 6px 18px;
             border-radius: 50px;
-            margin-top: 10px;
+            margin-top: 8px;
             font-size: 14px;
         }
 
-        /* Catálogo: lista de tarjetas */
-        .catalog {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            padding: 0;
-        }
-
-        /* Cada producto es una tarjeta blanca */
+        /* Tarjeta de producto */
         .product-card {
             background: white;
             border-radius: 0;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            page-break-inside: avoid;
-            page-break-after: always;
-            break-inside: avoid;
-            margin-bottom: 0;
+            flex: 1;                  /* Ocupa el espacio disponible entre header y footer */
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0;           /* Pequeño margen vertical para separar del header/footer */
         }
 
-        .product-card:last-child {
-            page-break-after: auto;
-        }
-
-        /* Imagen */
         .product-image-container {
             background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            padding: 20px;
+            padding: 15px;
         }
 
         .product-image {
@@ -866,15 +863,15 @@ def generar_html_catalogo(products):
             object-fit: contain;
         }
 
-        /* Información del producto */
         .product-info {
-            padding: 25px 20px 30px;
+            padding: 20px 20px 25px;
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
         .product-name {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 12px;
             color: #2c3e50;
@@ -887,11 +884,11 @@ def generar_html_catalogo(products):
 
         .product-price {
             color: #e74c3c;
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 800;
             display: inline-block;
             background: #ffeaa7;
-            padding: 6px 20px;
+            padding: 6px 18px;
             border-radius: 50px;
         }
 
@@ -908,75 +905,70 @@ def generar_html_catalogo(products):
 
         .product-description strong { color: #2c3e50; }
 
-        /* Footer (estadísticas) */
-        .stats {
+        /* Footer */
+        .footer {
             text-align: center;
             color: white;
-            padding: 25px 20px;
+            padding: 20px 15px;
             background: rgba(0,0,0,0.15);
-            border-radius: 0 0 20px 20px;
-            page-break-before: avoid;
-            margin-top: 0;
+            flex-shrink: 0;
+            margin-top: 10px;
         }
 
-        /* Estilos para pantallas pequeñas (responsive) */
+        /* Estilos para pantallas pequeñas */
         @media (max-width: 640px) {
-            .container {
-                max-width: 100%;
-                padding: 10px;
-            }
-            .product-image {
-                max-height: 200px;
-            }
-            .product-price {
-                font-size: 24px;
-            }
-            .header h1 {
-                font-size: 28px;
-            }
+            .page { padding: 0.8cm; }
+            .product-image { max-height: 200px; }
+            .product-price { font-size: 24px; }
+            .header h1 { font-size: 28px; }
         }
 
         /* Estilos específicos para impresión / PDF */
         @media print {
-            body {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                display: block;
-            }
-
-            /* Márgenes de página reducidos para borde morado más delgado */
+            /* Eliminar márgenes de página para que el body ocupe todo */
             @page {
-                margin: 0.8cm;          /* Reducido de 1.5cm a 0.8cm */
+                margin: 0;
                 size: A4;
             }
 
-            .container {
-                max-width: 100% !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            body {
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                display: block;
+                min-height: 100vh;
+            }
+
+            .page {
+                min-height: 100vh;           /* Ocupa toda la altura de la página */
+                padding: 1.5cm;              /* Borde morado uniforme en los cuatro lados */
+                page-break-after: always;
+                page-break-inside: avoid;
+                margin: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+                background: transparent !important;
+            }
+
+            .page:last-child {
+                page-break-after: auto;
             }
 
             .header {
                 border-radius: 0 !important;
-                page-break-after: avoid;
                 padding: 20px 15px;
             }
 
             .product-card {
                 box-shadow: none !important;
                 border-radius: 0 !important;
-                page-break-after: always;
-                page-break-inside: avoid;
-                margin: 0;
-            }
-
-            .product-card:last-child {
-                page-break-after: auto;
+                margin: 8px 0;
             }
 
             .product-image-container {
-                padding: 15px;
+                padding: 10px;
             }
 
             .product-image {
@@ -984,7 +976,7 @@ def generar_html_catalogo(products):
             }
 
             .product-info {
-                padding: 20px 15px 25px;
+                padding: 15px 15px 20px;
             }
 
             .product-description {
@@ -992,41 +984,28 @@ def generar_html_catalogo(products):
                 padding: 10px 12px;
             }
 
-            .stats {
+            .footer {
                 border-radius: 0 !important;
                 background: rgba(0,0,0,0.15);
-                padding: 20px 15px;
-                page-break-before: avoid;
+                padding: 15px 10px;
+                margin-top: 8px;
             }
 
-            /* Eliminar sombras y efectos visuales innecesarios */
-            .product-card, .header, .stats {
+            /* Eliminar sombras y efectos visuales */
+            .product-card, .header, .footer {
                 box-shadow: none !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Song Beauty Shop</h1>
-            <p>La belleza que se escucha</p>
-            <div class="stats-badge">Productos disponibles: {product_count}</div>
-            <p style="font-size: 12px; margin-top: 8px;">Actualizado: {fecha}</p>
-        </div>
-
-        <div class="catalog">{product_cards}</div>
-
-        <div class="stats">
-            <p>Productos 100% originales de Corea del Sur</p>
-            <p>Envios a todo Costa Rica (3-5 dias habiles)</p>
-            <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
-        </div>
-    </div>
+    <!-- Cada producto va envuelto en un div .page -->
+    {product_pages}
 </body>
 </html>'''
 
-    product_cards = []
+    # Construir las páginas (cada una con su header, tarjeta y footer)
+    product_pages = []
     for product in products:
         image_url = product.get('imageUrl', 'https://via.placeholder.com/300x300?text=SongBeauty')
         precio_formateado = format_price_crc(product.get('price_crc'))
@@ -1036,7 +1015,16 @@ def generar_html_catalogo(products):
         descripcion_html = product.get('description', '')
         descripcion_html = descripcion_html.replace('\n', '<br>')
 
-        card = f'''
+        # Cada página tiene su propio header, tarjeta y footer, para que se repitan en cada hoja
+        page_html = f'''
+    <div class="page">
+        <div class="header">
+            <h1>Song Beauty Shop</h1>
+            <p>La belleza que se escucha</p>
+            <div class="stats-badge">Productos disponibles: {len(products)}</div>
+            <p style="font-size: 12px; margin-top: 6px;">Actualizado: {datetime.now().strftime("%d/%m/%Y %H:%M")}</p>
+        </div>
+
         <div class="product-card">
             <div class="product-image-container">
                 <img class="product-image" src="{image_url}" alt="{escape(product['name'])}" onerror="this.src='https://via.placeholder.com/300x300?text=SongBeauty'">
@@ -1048,12 +1036,25 @@ def generar_html_catalogo(products):
                 </div>
                 <div class="product-description">{descripcion_html}</div>
             </div>
-        </div>'''
-        product_cards.append(card)
+        </div>
 
-    final_html = html_template.replace('{product_cards}', '\n'.join(product_cards))
-    final_html = final_html.replace('{product_count}', str(len(products)))
-    final_html = final_html.replace('{fecha}', fecha_actual)
+        <div class="footer">
+            <p>Productos 100% originales de Corea del Sur</p>
+            <p>Envios a todo Costa Rica (3-5 dias habiles)</p>
+            <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
+        </div>
+    </div>'''
+        product_pages.append(page_html)
+
+    final_html = html_template.replace('{product_pages}', '\n'.join(product_pages))
+
+    # Reemplazar la fecha en cada página no es necesario porque la generamos dinámicamente dentro del bucle
+    # pero como la fecha la usamos en el template, la pasamos como variable global
+    # Para simplificar, la fecha se genera en cada página con datetime.now(), así que no hace falta reemplazar.
+    # Sin embargo, el template no usa {fecha} porque ahora se genera en cada page.
+    # Eliminamos la línea de reemplazo de {fecha} para evitar errores.
+    # Pero mantendremos la variable por si acaso.
+    final_html = final_html.replace('{fecha}', fecha_actual)  # Por si acaso
 
     return final_html
 
