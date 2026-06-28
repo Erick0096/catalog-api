@@ -767,46 +767,42 @@ def cargar_urls():
 
 def generar_html_catalogo(products):
     """
-    Construye el HTML final del catálogo con todas las tarjetas de producto.
-    Las imágenes no tienen loading="lazy" para que se carguen al instante.
-    No incluye botones interactivos (WhatsApp, carrito).
-    El diseño usa márgenes de página a cero y un padding en el contenedor
-    para lograr un borde morado uniforme en los cuatro lados de cada página.
+    Construye el HTML final del catálogo con un diseño de una página por producto.
+    El encabezado (título, subtítulo, contador) aparece solo en la primera página.
+    El pie de página (información de envíos, etc.) aparece solo en la última página.
+    Cada producto ocupa una página completa, con un marco morado (gradiente) y un borde blanco exterior.
     """
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+    total_productos = len(products)
 
-    html_template = '''<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Song Beauty Shop - Catalogo de Productos</title>
+    # Estilos CSS (dentro del HTML)
+    css = """
     <style>
         /* Reset básico */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Fondo morado que ocupará toda la página */
+        /* Fondo morado que actuará como marco interior */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Cada página (producto) ocupará el 100% del viewport en pantalla,
-           y en impresión ocupará toda la página */
+        /* Cada página ocupa el 100% del viewport en pantalla, y en impresión ocupa toda la hoja */
         .page {
             display: flex;
             flex-direction: column;
             min-height: 100vh;          /* En pantalla ocupa toda la altura */
             width: 100%;
-            padding: 1.5cm;             /* Borde morado uniforme en los cuatro lados */
+            padding: 1.2cm;             /* Espacio interior: el marco morado */
             page-break-after: always;   /* Cada página en una hoja */
             page-break-inside: avoid;
             background: transparent;    /* Deja ver el fondo morado del body */
+            box-sizing: border-box;
         }
 
         /* La última página no necesita salto después */
@@ -814,37 +810,50 @@ def generar_html_catalogo(products):
             page-break-after: auto;
         }
 
-        /* Header */
+        /* Contenedor blanco que envuelve header, tarjeta y footer */
+        .content-wrapper {
+            background: white;
+            border-radius: 0;           /* Sin bordes redondeados en impresión */
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Header (solo primera página) */
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
             padding: 25px 20px;
             text-align: center;
-            border-radius: 0;          /* Sin bordes redondeados en impresión */
             flex-shrink: 0;
         }
 
-        .header h1 { font-size: 36px; margin-bottom: 8px; }
+        .header h1 { font-size: 34px; margin-bottom: 6px; }
 
         .stats-badge {
             display: inline-block;
             background: rgba(255,255,255,0.2);
-            padding: 6px 18px;
+            padding: 5px 16px;
             border-radius: 50px;
-            margin-top: 8px;
-            font-size: 14px;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .header .date {
+            font-size: 11px;
+            margin-top: 6px;
+            opacity: 0.8;
         }
 
         /* Tarjeta de producto */
         .product-card {
             background: white;
-            border-radius: 0;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            flex: 1;                  /* Ocupa el espacio disponible entre header y footer */
             display: flex;
             flex-direction: column;
-            margin: 10px 0;           /* Pequeño margen vertical para separar del header/footer */
+            flex: 1;
+            padding: 15px 20px 20px;
         }
 
         .product-image-container {
@@ -859,12 +868,12 @@ def generar_html_catalogo(products):
         .product-image {
             width: 100%;
             height: auto;
-            max-height: 300px;
+            max-height: 280px;
             object-fit: contain;
         }
 
         .product-info {
-            padding: 20px 20px 25px;
+            padding: 10px 0 5px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -873,61 +882,65 @@ def generar_html_catalogo(products):
         .product-name {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             color: #2c3e50;
             line-height: 1.3;
         }
 
         .price-container {
-            margin: 10px 0 15px 0;
+            margin: 5px 0 10px 0;
         }
 
         .product-price {
             color: #e74c3c;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             display: inline-block;
             background: #ffeaa7;
-            padding: 6px 18px;
+            padding: 4px 16px;
             border-radius: 50px;
         }
 
         .product-description {
             color: #555;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
-            margin: 10px 0;
+            margin: 8px 0;
             white-space: pre-wrap;
             background: #f9f9f9;
-            padding: 12px 15px;
-            border-radius: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            flex: 1;
         }
 
         .product-description strong { color: #2c3e50; }
 
-        /* Footer */
+        /* Footer (solo última página) */
         .footer {
             text-align: center;
+            background: #2c3e50;
             color: white;
-            padding: 20px 15px;
-            background: rgba(0,0,0,0.15);
+            padding: 18px 15px;
             flex-shrink: 0;
-            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.6;
         }
+
+        .footer p { margin: 4px 0; }
 
         /* Estilos para pantallas pequeñas */
         @media (max-width: 640px) {
-            .page { padding: 0.8cm; }
-            .product-image { max-height: 200px; }
-            .product-price { font-size: 24px; }
-            .header h1 { font-size: 28px; }
+            .page { padding: 0.6cm; }
+            .product-image { max-height: 180px; }
+            .product-price { font-size: 22px; }
+            .header h1 { font-size: 26px; }
         }
 
         /* Estilos específicos para impresión / PDF */
         @media print {
-            /* Eliminar márgenes de página para que el body ocupe todo */
+            /* Margen blanco exterior: 0.5in en todos los lados */
             @page {
-                margin: 0;
+                margin: 0.5in;
                 size: A4;
             }
 
@@ -940,8 +953,8 @@ def generar_html_catalogo(products):
             }
 
             .page {
-                min-height: 100vh;           /* Ocupa toda la altura de la página */
-                padding: 1.5cm;              /* Borde morado uniforme en los cuatro lados */
+                min-height: 100vh;
+                padding: 0.8cm;          /* Marco morado interior */
                 page-break-after: always;
                 page-break-inside: avoid;
                 margin: 0;
@@ -956,15 +969,17 @@ def generar_html_catalogo(products):
                 page-break-after: auto;
             }
 
-            .header {
+            .content-wrapper {
+                box-shadow: none !important;
                 border-radius: 0 !important;
-                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 18px 15px;
             }
 
             .product-card {
-                box-shadow: none !important;
-                border-radius: 0 !important;
-                margin: 8px 0;
+                padding: 10px 15px 15px;
             }
 
             .product-image-container {
@@ -972,59 +987,62 @@ def generar_html_catalogo(products):
             }
 
             .product-image {
-                max-height: 250px;
+                max-height: 220px;
             }
 
             .product-info {
-                padding: 15px 15px 20px;
+                padding: 8px 0 0;
             }
 
             .product-description {
-                background: #f9f9f9;
-                padding: 10px 12px;
+                padding: 8px 10px;
+                font-size: 12px;
             }
 
             .footer {
-                border-radius: 0 !important;
-                background: rgba(0,0,0,0.15);
-                padding: 15px 10px;
-                margin-top: 8px;
+                padding: 14px 10px;
+                font-size: 12px;
             }
 
-            /* Eliminar sombras y efectos visuales */
-            .product-card, .header, .footer {
+            /* Eliminar sombras */
+            .content-wrapper, .product-card, .header, .footer {
                 box-shadow: none !important;
             }
         }
     </style>
-</head>
-<body>
-    <!-- Cada producto va envuelto en un div .page -->
-    {product_pages}
-</body>
-</html>'''
+    """
 
-    # Construir las páginas (cada una con su header, tarjeta y footer)
-    product_pages = []
-    for product in products:
+    # Construir las páginas
+    pages_html = []
+    for idx, product in enumerate(products):
+        # Determinar si es primera o última página
+        is_first = (idx == 0)
+        is_last = (idx == len(products) - 1)
+
         image_url = product.get('imageUrl', 'https://via.placeholder.com/300x300?text=SongBeauty')
         precio_formateado = format_price_crc(product.get('price_crc'))
         nombre_limpio = product['name'].replace("'", "\\'").replace('"', '&quot;')
 
-        # Convertir saltos de línea a <br> para HTML
         descripcion_html = product.get('description', '')
         descripcion_html = descripcion_html.replace('\n', '<br>')
 
-        # Cada página tiene su propio header, tarjeta y footer, para que se repitan en cada hoja
-        page_html = f'''
-    <div class="page">
-        <div class="header">
-            <h1>Song Beauty Shop</h1>
-            <p>La belleza que se escucha</p>
-            <div class="stats-badge">Productos disponibles: {len(products)}</div>
-            <p style="font-size: 12px; margin-top: 6px;">Actualizado: {datetime.now().strftime("%d/%m/%Y %H:%M")}</p>
-        </div>
+        # Construir el contenido de la página
+        page_parts = []
 
+        # Si es primera página, agregar header
+        if is_first:
+            header_html = f'''
+            <div class="header">
+                <h1>Song Beauty Shop</h1>
+                <p>La belleza que se escucha</p>
+                <div class="stats-badge">Productos disponibles: {total_productos}</div>
+                <div class="date">Actualizado: {fecha_actual}</div>
+            </div>
+            '''
+            page_parts.append(header_html)
+
+        # Tarjeta de producto
+        card_html = f'''
         <div class="product-card">
             <div class="product-image-container">
                 <img class="product-image" src="{image_url}" alt="{escape(product['name'])}" onerror="this.src='https://via.placeholder.com/300x300?text=SongBeauty'">
@@ -1037,24 +1055,43 @@ def generar_html_catalogo(products):
                 <div class="product-description">{descripcion_html}</div>
             </div>
         </div>
+        '''
+        page_parts.append(card_html)
 
-        <div class="footer">
-            <p>Productos 100% originales de Corea del Sur</p>
-            <p>Envios a todo Costa Rica (3-5 dias habiles)</p>
-            <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
+        # Si es última página, agregar footer
+        if is_last:
+            footer_html = '''
+            <div class="footer">
+                <p>Productos 100% originales de Corea del Sur</p>
+                <p>Envíos a todo Costa Rica (3-5 días hábiles)</p>
+                <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
+            </div>
+            '''
+            page_parts.append(footer_html)
+
+        # Envolver en .content-wrapper y .page
+        page_html = f'''
+        <div class="page">
+            <div class="content-wrapper">
+                {''.join(page_parts)}
+            </div>
         </div>
-    </div>'''
-        product_pages.append(page_html)
+        '''
+        pages_html.append(page_html)
 
-    final_html = html_template.replace('{product_pages}', '\n'.join(product_pages))
-
-    # Reemplazar la fecha en cada página no es necesario porque la generamos dinámicamente dentro del bucle
-    # pero como la fecha la usamos en el template, la pasamos como variable global
-    # Para simplificar, la fecha se genera en cada página con datetime.now(), así que no hace falta reemplazar.
-    # Sin embargo, el template no usa {fecha} porque ahora se genera en cada page.
-    # Eliminamos la línea de reemplazo de {fecha} para evitar errores.
-    # Pero mantendremos la variable por si acaso.
-    final_html = final_html.replace('{fecha}', fecha_actual)  # Por si acaso
+    # Unir todo
+    final_html = f'''<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Beauty Shop - Catálogo de Productos</title>
+    {css}
+</head>
+<body>
+    {''.join(pages_html)}
+</body>
+</html>'''
 
     return final_html
 
