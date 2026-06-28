@@ -793,6 +793,7 @@ def generar_html_catalogo(products):
             color: white;
             padding: 40px 20px;
             text-align: center;
+            page-break-after: avoid;  /* Evita que se divida en varias páginas */
         }
 
         .header h1 { font-size: 42px; margin-bottom: 10px; }
@@ -818,11 +819,13 @@ def generar_html_catalogo(products):
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            display: flex;
-            flex-direction: row;
+            /* display: flex; */
+            /*flex-direction: row; */
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            animation: fadeIn 0.6s ease-out;
+            /* transition: transform 0.3s; */
+            /* animation: fadeIn 0.6s ease-out; */
+            page-break-inside: avoid;
+            break-inside: avoid;
         }
 
         .product-card:hover { transform: translateY(-5px); }
@@ -894,6 +897,7 @@ def generar_html_catalogo(products):
             background: rgba(0,0,0,0.1);
             border-radius: 15px;
             max-width: 800px;
+            page-break-before: avoid; /* evita que se separe del contenido anterior */        
         }
 
         @keyframes fadeIn {
