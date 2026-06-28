@@ -786,6 +786,14 @@ def generar_html_catalogo(products):
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* Contenedor interno para centrar el contenido y dar el borde morado */
+        .container {
+            max-width: 900px;          /* Reducido para ampliar el borde morado ~30% */
+            margin: 0 auto;
+            padding: 0 30px;          /* Padding lateral para separar el contenido del borde */
         }
 
         .header {
@@ -793,7 +801,8 @@ def generar_html_catalogo(products):
             color: white;
             padding: 40px 20px;
             text-align: center;
-            page-break-after: avoid;  /* Evita que se divida en varias páginas */
+            border-radius: 20px 20px 0 0;
+            page-break-after: avoid;  /* Evita que el header se divida */
         }
 
         .header h1 { font-size: 42px; margin-bottom: 10px; }
@@ -810,22 +819,22 @@ def generar_html_catalogo(products):
             display: flex;
             flex-direction: column;
             gap: 30px;
-            padding: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 30px 0;
         }
 
         .product-card {
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            /* display: flex; */
-            /*flex-direction: row; */
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            /* transition: transform 0.3s; */
-            /* animation: fadeIn 0.6s ease-out; */
-            page-break-inside: avoid;
+            page-break-inside: avoid;    /* Evita que una tarjeta se divida entre páginas */
+            page-break-after: always;    /* Cada tarjeta en su propia página */
             break-inside: avoid;
+        }
+
+        /* El último producto no necesita salto de página después */
+        .product-card:last-child {
+            page-break-after: auto;
         }
 
         .product-card:hover { transform: translateY(-5px); }
@@ -894,10 +903,9 @@ def generar_html_catalogo(products):
             color: white;
             margin: 30px auto;
             padding: 30px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 15px;
-            max-width: 800px;
-            page-break-before: avoid; /* evita que se separe del contenido anterior */        
+            background: rgba(0,0,0,0.15);
+            border-radius: 0 0 20px 20px;
+            page-break-before: avoid; /* evita que se separe del contenido anterior */
         }
 
         @keyframes fadeIn {
@@ -916,27 +924,60 @@ def generar_html_catalogo(products):
                 height: 100%;
                 max-width: 100%;
             }
-            .catalog { padding: 20px; }
+            .container { padding: 0 15px; }
             .product-price { font-size: 28px; }
             .header h1 { font-size: 32px; }
             .product-description { font-size: 13px; }
         }
+
+        @media print {
+            body {
+                background: #764ba2; /* color sólido para evitar bandas en PDF */
+                padding: 0;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0 0.8in;  /* Ajuste para impresión */
+            }
+            .header {
+                background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                page-break-after: avoid;
+                border-radius: 0;
+            }
+            .product-card {
+                break-inside: avoid;
+                box-shadow: none;
+                page-break-after: always;
+                border-radius: 0;
+            }
+            .product-card:last-child {
+                page-break-after: auto;
+            }
+            .stats {
+                background: #2c3e50;
+                break-inside: avoid;
+                border-radius: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Song Beauty Shop</h1>
-        <p>La belleza que se escucha</p>
-        <div class="stats-badge">Productos disponibles: {product_count}</div>
-        <p style="font-size: 12px; margin-top: 10px;">Actualizado: {fecha}</p>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Song Beauty Shop</h1>
+            <p>La belleza que se escucha</p>
+            <div class="stats-badge">Productos disponibles: {product_count}</div>
+            <p style="font-size: 12px; margin-top: 10px;">Actualizado: {fecha}</p>
+        </div>
 
-    <div class="catalog">{product_cards}</div>
+        <div class="catalog">{product_cards}</div>
 
-    <div class="stats">
-        <p>Productos 100% originales de Corea del Sur</p>
-        <p>Envios a todo Costa Rica (3-5 dias habiles)</p>
-        <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
+        <div class="stats">
+            <p>Productos 100% originales de Corea del Sur</p>
+            <p>Envios a todo Costa Rica (3-5 dias habiles)</p>
+            <p>Aceptamos transferencia, SINPE y efectivo contra entrega</p>
+        </div>
     </div>
 </body>
 </html>'''
