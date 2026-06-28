@@ -770,6 +770,7 @@ def generar_html_catalogo(products):
     Construye el HTML final del catálogo con todas las tarjetas de producto.
     Las imágenes no tienen loading="lazy" para que se carguen al instante.
     No incluye botones interactivos (WhatsApp, carrito).
+    El diseño usa un contenedor más ancho (900px) para que el borde morado sea más delgado.
     """
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -780,72 +781,82 @@ def generar_html_catalogo(products):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Song Beauty Shop - Catalogo de Productos</title>
     <style>
+        /* Reset básico */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* Fondo morado que ocupará toda la página */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px 0;
         }
 
-        /* Contenedor interno para centrar el contenido y dar el borde morado */
+        /* Contenedor principal: ancho para que el borde morado sea más delgado (900px) */
         .container {
-            max-width: 900px;          /* Reducido para ampliar el borde morado ~30% */
+            max-width: 900px;          /* Aumentado desde 600px para reducir el borde */
+            width: 100%;
             margin: 0 auto;
-            padding: 0 30px;          /* Padding lateral para separar el contenido del borde */
+            padding: 15px;            /* Espacio interno reducido */
+            background: transparent;
         }
 
+        /* Header: fondo azul con borde redondeado solo para pantalla */
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
-            padding: 40px 20px;
+            padding: 30px 20px;
             text-align: center;
             border-radius: 20px 20px 0 0;
-            page-break-after: avoid;  /* Evita que el header se divida */
+            page-break-after: avoid;
         }
 
-        .header h1 { font-size: 42px; margin-bottom: 10px; }
+        .header h1 { font-size: 36px; margin-bottom: 10px; }
 
         .stats-badge {
             display: inline-block;
             background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
+            padding: 6px 18px;
             border-radius: 50px;
-            margin-top: 15px;
+            margin-top: 10px;
+            font-size: 14px;
         }
 
+        /* Catálogo: lista de tarjetas */
         .catalog {
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            padding: 30px 0;
+            gap: 0;
+            padding: 0;
         }
 
+        /* Cada producto es una tarjeta blanca */
         .product-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 0;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            page-break-inside: avoid;    /* Evita que una tarjeta se divida entre páginas */
-            page-break-after: always;    /* Cada tarjeta en su propia página */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            page-break-after: always;
             break-inside: avoid;
+            margin-bottom: 0;
         }
 
-        /* El último producto no necesita salto de página después */
         .product-card:last-child {
             page-break-after: auto;
         }
 
-        .product-card:hover { transform: translateY(-5px); }
-
+        /* Imagen */
         .product-image-container {
-            flex: 0 0 300px;
             background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            padding: 20px;
         }
 
         .product-image {
@@ -853,14 +864,11 @@ def generar_html_catalogo(products):
             height: auto;
             max-height: 300px;
             object-fit: contain;
-            transition: transform 0.5s;
         }
 
-        .product-card:hover .product-image { transform: scale(1.05); }
-
+        /* Información del producto */
         .product-info {
-            flex: 1;
-            padding: 25px;
+            padding: 25px 20px 30px;
             display: flex;
             flex-direction: column;
         }
@@ -868,20 +876,22 @@ def generar_html_catalogo(products):
         .product-name {
             font-size: 22px;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #2c3e50;
             line-height: 1.3;
         }
 
-        .price-container { margin: 15px 0 20px 0; }
+        .price-container {
+            margin: 10px 0 15px 0;
+        }
 
         .product-price {
             color: #e74c3c;
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 800;
             display: inline-block;
             background: #ffeaa7;
-            padding: 8px 20px;
+            padding: 6px 20px;
             border-radius: 50px;
         }
 
@@ -889,77 +899,111 @@ def generar_html_catalogo(products):
             color: #555;
             font-size: 14px;
             line-height: 1.6;
-            margin: 15px 0;
+            margin: 10px 0;
             white-space: pre-wrap;
             background: #f9f9f9;
-            padding: 15px;
+            padding: 12px 15px;
             border-radius: 12px;
         }
 
         .product-description strong { color: #2c3e50; }
 
+        /* Footer (estadísticas) */
         .stats {
             text-align: center;
             color: white;
-            margin: 30px auto;
-            padding: 30px;
+            padding: 25px 20px;
             background: rgba(0,0,0,0.15);
             border-radius: 0 0 20px 20px;
-            page-break-before: avoid; /* evita que se separe del contenido anterior */
+            page-break-before: avoid;
+            margin-top: 0;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            .product-card { flex-direction: column; }
-            .product-image-container {
-                flex: 0 0 auto;
-                height: 250px;
-            }
-            .product-image {
-                width: auto;
-                height: 100%;
-                max-width: 100%;
-            }
-            .container { padding: 0 15px; }
-            .product-price { font-size: 28px; }
-            .header h1 { font-size: 32px; }
-            .product-description { font-size: 13px; }
-        }
-
-        @media print {
-            body {
-                background: #764ba2; /* color sólido para evitar bandas en PDF */
-                padding: 0;
-            }
+        /* Estilos para pantallas pequeñas (responsive) */
+        @media (max-width: 640px) {
             .container {
                 max-width: 100%;
-                padding: 0 0.8in;  /* Ajuste para impresión */
+                padding: 10px;
             }
+            .product-image {
+                max-height: 200px;
+            }
+            .product-price {
+                font-size: 24px;
+            }
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+
+        /* Estilos específicos para impresión / PDF */
+        @media print {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block;
+            }
+
+            /* Márgenes de página reducidos para borde morado más delgado */
+            @page {
+                margin: 0.8cm;          /* Reducido de 1.5cm a 0.8cm */
+                size: A4;
+            }
+
+            .container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
             .header {
-                background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                border-radius: 0 !important;
                 page-break-after: avoid;
-                border-radius: 0;
+                padding: 20px 15px;
             }
+
             .product-card {
-                break-inside: avoid;
-                box-shadow: none;
+                box-shadow: none !important;
+                border-radius: 0 !important;
                 page-break-after: always;
-                border-radius: 0;
+                page-break-inside: avoid;
+                margin: 0;
             }
+
             .product-card:last-child {
                 page-break-after: auto;
             }
+
+            .product-image-container {
+                padding: 15px;
+            }
+
+            .product-image {
+                max-height: 250px;
+            }
+
+            .product-info {
+                padding: 20px 15px 25px;
+            }
+
+            .product-description {
+                background: #f9f9f9;
+                padding: 10px 12px;
+            }
+
             .stats {
-                background: #2c3e50;
-                break-inside: avoid;
-                border-radius: 0;
+                border-radius: 0 !important;
+                background: rgba(0,0,0,0.15);
+                padding: 20px 15px;
+                page-break-before: avoid;
+            }
+
+            /* Eliminar sombras y efectos visuales innecesarios */
+            .product-card, .header, .stats {
+                box-shadow: none !important;
             }
         }
-
     </style>
 </head>
 <body>
@@ -968,7 +1012,7 @@ def generar_html_catalogo(products):
             <h1>Song Beauty Shop</h1>
             <p>La belleza que se escucha</p>
             <div class="stats-badge">Productos disponibles: {product_count}</div>
-            <p style="font-size: 12px; margin-top: 10px;">Actualizado: {fecha}</p>
+            <p style="font-size: 12px; margin-top: 8px;">Actualizado: {fecha}</p>
         </div>
 
         <div class="catalog">{product_cards}</div>
